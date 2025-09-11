@@ -28,9 +28,12 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
-    steps:        
+    steps:       
+      - name: Instalar dependências
+        run: pip install -r requirements.txt 
       - name: Rodar testes unitários
         run: pytest --maxfail=1 --disable-warnings -q
+
 
   artefato:
     needs: test
