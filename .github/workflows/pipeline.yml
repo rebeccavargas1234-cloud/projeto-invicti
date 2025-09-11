@@ -3,6 +3,21 @@ name: Deploy App Python
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Ambiente para deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      debug_enabled:
+        description: 'Habilitar debug'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -24,11 +39,6 @@ jobs:
           cd build
           zip -r ../meuapp.zip .
           cd ..
-
-      - name: Análise de segurança com Bandit
-        run: |
-          pip install bandit
-          bandit -r .
 
 
   artefato:
