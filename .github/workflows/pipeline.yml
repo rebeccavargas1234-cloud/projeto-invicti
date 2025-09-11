@@ -30,6 +30,11 @@ jobs:
             python -m pip install --upgrade pip
             python -m pip install -r requirements.txt    
 
+  artefato:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
       - name: Gerar build (zip da aplicação)
         run: |
           mkdir build
@@ -38,11 +43,6 @@ jobs:
           zip -r ../meuapp.zip .
           cd ..
 
-
-  artefato:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Upload artefato
         uses: actions/upload-artifact@v4
         with:
