@@ -17,6 +17,20 @@ jobs:
             python -m pip install --upgrade pip
             python -m pip install -r requirements.txt    
 
+      - name: Gerar build (zip da aplicação)
+        run: |
+          mkdir build
+          cp -r app.py requirements.txt templates build/
+          cd build
+          zip -r ../meuapp.zip .
+          cd ..
+
+      - name: Upload artefato
+        uses: actions/upload-artifact@v3
+        with:
+          name: meuapp
+          path: meuapp.zip
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
