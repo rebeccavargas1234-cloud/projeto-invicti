@@ -25,6 +25,17 @@ jobs:
           zip -r ../meuapp.zip .
           cd ..
 
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:        
+      - name: Rodar testes unitários
+        run: pytest --maxfail=1 --disable-warnings -q
+
+  artefato:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
       - name: Upload artefato
         uses: actions/upload-artifact@v4
         with:
@@ -32,7 +43,7 @@ jobs:
           path: meuapp.zip
 
   deploy:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout código
