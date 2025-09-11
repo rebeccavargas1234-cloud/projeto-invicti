@@ -1,0 +1,25 @@
+name: Deploy App Python
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Build da imagem
+        run: docker build -t ${{ secrets.DOCKER_USER }}/meuapp:latest .
+
+      - name: Push da imagem
+        run: docker push ${{ secrets.DOCKER_USER }}/meuapp:latest
