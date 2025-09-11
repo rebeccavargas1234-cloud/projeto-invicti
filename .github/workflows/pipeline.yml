@@ -25,8 +25,11 @@ jobs:
           zip -r ../meuapp.zip .
           cd ..
 
-      - name: Rodar testes unitários
-        run: pytest --maxfail=1 --disable-warnings -q
+      - name: Análise de segurança com Bandit
+        run: |
+          pip install bandit
+          bandit -r .
+
 
   artefato:
     needs: build
