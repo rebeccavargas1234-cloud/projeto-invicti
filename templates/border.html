@@ -4,68 +4,62 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Border Collie — Raça</title>
-  <style>
-    :root{
-      --bg:#f6f8fb;
-      --card:#ffffff;
-      --accent:#2b8cff;
-      --text:#24303f;
-    }
-    body{
-      margin:0;
-      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background:var(--bg);
-      color:var(--text);
-      line-height:1.6;
-    }
-    .container{
-      max-width:920px;
-      margin:48px auto;
-      padding:24px;
-    }
-    .card{
-      background:var(--card);
-      border-radius:12px;
-      box-shadow:0 8px 24px rgba(15,20,30,0.06);
-      overflow:hidden;
-    }
-    .hero{
-      display:flex;
-      gap:24px;
-      padding:28px;
-      align-items:center;
-    }
-    .hero img{
-      width:260px;
-      height:170px;
-      object-fit:cover;
-      border-radius:8px;
-      flex:0 0 260px;
-    }
-    h1{ margin:0 0 8px 0; font-size:28px; }
-    .meta{ color:#5b6a78; margin-bottom:14px; }
-    .sections{ padding:0 28px 28px 28px; }
-    h2{ color:var(--accent); margin-top:18px; font-size:18px;}
-    ul{ margin:8px 0 8px 20px; }
-    .cta{
-      display:flex;
-      justify-content:flex-end;
-      padding:16px 28px;
-      border-top:1px solid #eef2f6;
-    }
-    .pill{
-      background:var(--accent);
-      color:white;
-      padding:10px 14px;
-      border-radius:999px;
-      text-decoration:none;
-      font-weight:600;
-    }
-    @media (max-width:720px){
-      .hero{ flex-direction:column; align-items:stretch; }
-      .hero img{ width:100%; height:200px; }
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="hero">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/26/Border_Collie_liver_portrait.jpg" alt="Border Collie">
+        <div>
+          <h1>Border Collie</h1>
+          <div class="meta">
+            Origem: Fronteira Inglaterra/Escócia • Tipo: Pastor • Esperança de vida: 12–15 anos
+          </div>
+          <p>
+            O <strong>Border Collie</strong> é reconhecido pela inteligência excepcional, energia alta e
+            grande habilidade para pastoreio. Extremamente treinável, adora trabalho e estímulo mental.
+          </p>
+        </div>
+      </div>
+
+      <div class="sections">
+        <h2>Características principais</h2>
+        <ul>
+          <li><strong>Inteligência:</strong> entre as raças mais inteligentes — aprende comandos complexos.</li>
+          <li><strong>Energia:</strong> necessita de muito exercício diário (corridas, jogos, obediência).</li>
+          <li><strong>Treinamento:</strong> responde muito bem a treinos com propósito (frisbee, agility).</li>
+          <li><strong>Instinto de pastoreio:</strong> pode tentar "pastorear" pessoas/animais se não for estimulado.</li>
+        </ul>
+
+        <h2>Cuidados e rotina</h2>
+        <ul>
+          <li><strong>Exercício:</strong> mínimo de 1–2 horas diárias de atividade intensa.</li>
+          <li><strong>Estimulação mental:</strong> brinquedos interativos, obediência e jogos que desafiem a mente.</li>
+          <li><strong>Escovação:</strong> manutenção regular; muda de pelo duas vezes por ano.</li>
+          <li><strong>Saúde:</strong> cheque com o veterinário histórico de displasia, problemas oculares (testes recomendados).</li>
+        </ul>
+
+        <h2>É o cão certo pra mim?</h2>
+        <p>
+          Ideal para pessoas ou famílias ativas que têm tempo para treinar, brincar e envolver o cão em
+          tarefas diárias. Não é a melhor escolha para quem busca um cão calmo e de baixa manutenção.
+        </p>
+
+        <h2>Curiosidades</h2>
+        <ul>
+          <li>Border Collies já venceram competições internacionais de inteligência canina.</li>
+          <li>Muitos são utilizados em esportes caninos como <em>agility</em> e <em>flyball</em>.</li>
+        </ul>
+      </div>
+
+      <div class="cta">
+        <a class="pill" href="#" onclick="alert('Mais conteúdo em breve!')">Quero saber mais</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
 </head>
 <body>
   <div class="container">
