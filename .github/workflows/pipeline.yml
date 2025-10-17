@@ -16,6 +16,9 @@ on:
         required: false
         type: boolean
         default: false
+  push:
+    branches: [ main ]
+  pull_request: {}
 
 jobs:
   build:
@@ -43,6 +46,34 @@ jobs:
         with:
           name: meuapp
           path: meuapp.zip
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: invicti/scan-cli:latest
+    env:
+      INVICTI_API_BASE_URL: "https://platform.invicti.com"
+      INVICTI_API_TOKEN: 2H-LSsQbmnFcKKlDZzm2u5e96ul6XhRYCKdhe7fWIQs
+      INVICTI_TARGET_ID: "2ac1910c-b482-4660-81af-a63da1c86d91"
+      INVICTI_SCAN_AGENT: "CloudAgent"
+      INVICTI_SCAN_PROFILE: "Full Scan"
+
+    steps:
+      - name: Run Invicti Scan CLI
+        run: /home/invicti/scancli/ScanCLI
+
+      - name: Upload scan artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: invicti-scan-results
+          path: |
+            ./scan-results/**
+            ./reports/**
+            ./*.json
+            ./*.html
+          if-no-files-found: ignore
+          retention-days: 7
 
   deploy:
     needs: build
