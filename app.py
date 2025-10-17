@@ -3,10 +3,6 @@ from flask import Flask, render_template, request, redirect, url_for, session
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session
 
-# Credentials
-ADMIN_USER = "admin"
-ADMIN_PASS = "admin"
-
 # Store animals (in memory - for demonstration)
 animals = []
 
@@ -27,10 +23,9 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        if username == ADMIN_USER and password == ADMIN_PASS:
-            session['logged_in'] = True
-            return redirect(url_for('register_animal'))
-        return render_template("login.html", error="Invalid credentials")
+        # Allow any login attempt
+        session['logged_in'] = True
+        return redirect(url_for('register_animal'))
     return render_template("login.html")
 
 @app.route("/register_animal", methods=['GET', 'POST'])
