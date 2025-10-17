@@ -46,3 +46,42 @@ def register_animal():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
+
+# ----------------------
+# INTENTIONALLY VULNERABLE ENDPOINT (for local testing only)
+# WARNING: do NOT deploy this to production or expose publicly.
+import sqlite3
+# in-memory DB for demo
+_conn = sqlite3.connect(':memory:', check_same_thread=False)
+_cur = _conn.cursor()
+_cur.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)')
+_cur.execute("INSERT INTO users (username, password) VALUES ('alice','alicepass')")
+_conn.commit()
+
+@app.route('/vuln-login', methods=['GET','POST'])
+def vuln_login():
+    """
+    Simple SQL Injection vulnerable login endpoint.
+    POST parameters: username, password
+    Returns "Logged in as: <username>" if match found, otherwise "Invalid credentials".
+    """
+    if request.method == 'POST':
+        user = request.form.get('username','')
+        pwd = request.form.get('password','')
+        # VULNERABLE: concatenated SQL string (SQL INJECTION)
+        sql = f"SELECT id, username FROM users WHERE username = '{user}' AND password = '{pwd}' LIMIT 1"
+        try:
+            row = _cur.execute(sql).fetchone()
+        except Exception as e:
+            return 'Error', 500
+        if row:
+            return 'Logged in as: ' + row[1]
+        return 'Invalid credentials'
+    # simple form for testing
+    return '''<form method="post">
+                Username: <input name="username"><br>
+                Password: <input name="password"><br>
+                <button type="submit">Login</button>
+              </form>'''
+# ----------------------
