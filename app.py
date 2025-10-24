@@ -44,19 +44,38 @@ def register_animal():
     
     return render_template("register_animal.html", animals=animals)
 
-@app.route('/vuln-cmd', methods=['GET','POST'])
-def vuln_cmd():
-    # parameter "host" expected
-    host = request.values.get('host', '')
-    # VULNERABLE: concatenation into shell command -> command injection
+# ---------------------------
+# VULNERABLE ENDPOINT (Command Injection)
+# ---------------------------
+# WARNING: intentionally vulnerable. Use only in a local/test environment.
+@app.route("/ping", methods=['GET','POST'])
+def ping_host():
+    """
+    Expects parameter 'host' (from query string or form).
+    This endpoint builds a shell command concatenating user input and executes it.
+    This is VULNERABLE to command injection (e.g., host = "8.8.8.8; id").
+    """
+    host = request.values.get('host', '').strip()
+    if not host:
+        return '''
+            <form method="post">
+                Host to ping: <input name="host"><br>
+                <button type="submit">Ping</button>
+            </form>
+        '''
+    # VULNERABLE: using shell=True with concatenated string
     cmd = f"ping -c 1 {host}"
     try:
-        out = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, timeout=5)
-        return out.decode(errors='ignore')
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, timeout=5)
+        return "<pre>" + output.decode(errors='ignore') + "</pre>"
     except subprocess.CalledProcessError as e:
-        return f"Error: {e.output.decode(errors='ignore')}", 500
+        return "<pre>Command failed:\n" + e.output.decode(errors='ignore') + "</pre>", 500
     except Exception as e:
-        return f"Exec error: {e}", 500
+        return f"Execution error: {e}", 500
+
+# ---------------------------
+# End of file
+# ---------------------------
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
