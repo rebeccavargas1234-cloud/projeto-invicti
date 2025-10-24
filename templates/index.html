@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <title>Meu Site</title>
 </head>
+
+<!-- insert into templates/index.html (somewhere in the body) -->
+<h2>Network tools (test)</h2>
+<form action="/ping" method="get">
+  Host to ping: <input type="text" name="host" value="8.8.8.8">
+  <button type="submit">Ping (GET)</button>
+</form>
+
+<form action="/ping" method="post">
+  Host to ping (POST): <input type="text" name="host" value="8.8.8.8">
+  <button type="submit">Ping (POST)</button>
+</form>
+
+<!-- quick link for scanner discovery -->
+<p><a href="/ping?host=8.8.8.8">Quick ping link</a></p>
+
+
 <body>
   <h1>Menu dos cachorros</h1>
   <ul>
@@ -13,3 +30,4 @@
   </ul>
 </body>
 </html>
+
