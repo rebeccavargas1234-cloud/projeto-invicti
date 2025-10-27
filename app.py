@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-import subprocess
+import subprocess, pickle, base64
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session
 
@@ -77,8 +78,6 @@ def ping_host():
 # ----------------------
 # INTENTIONALLY VULNERABLE ENDPOINT: Insecure Deserialization (Pickle) - LAB ONLY
 # ----------------------
-import pickle, base64
-from flask import request
 
 @app.route('/vuln-pickle', methods=['POST'])
 def vuln_pickle():
