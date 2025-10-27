@@ -73,6 +73,32 @@ def ping_host():
     except Exception as e:
         return f"Execution error: {e}", 500
 
+
+# ----------------------
+# INTENTIONALLY VULNERABLE ENDPOINT: Insecure Deserialization (Pickle) - LAB ONLY
+# ----------------------
+import pickle, base64
+from flask import request
+
+@app.route('/vuln-pickle', methods=['POST'])
+def vuln_pickle():
+    """
+    Expects raw base64-encoded pickle in the request body. Demonstrates insecure deserialization -> RCE risk.
+    Use only in isolated test environment.
+    """
+    b64 = request.get_data(as_text=True) or ''
+    if not b64:
+        return ("Send base64-encoded pickled payload in request body.\n", 400)
+    try:
+        data = base64.b64decode(b64)
+        # VULNERABLE: untrusted pickle deserialization -> may lead to remote code execution
+        obj = pickle.loads(data)
+    except Exception as e:
+        return (f"Deserialization error: {e}\n", 400)
+    return (f"Loaded object: {repr(obj)}\n", 200)
+# ----------------------
+
+
 # ---------------------------
 # End of file
 # ---------------------------
