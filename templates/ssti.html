@@ -1,11 +1,19 @@
 <!doctype html>
 <html>
+  <head><meta charset="utf-8"><title>SSTI Test Page</title></head>
   <body>
-    <h2>SSTI Test Page</h2>
+    <h2>SSTI Test Page (lab only)</h2>
     <form action="/render" method="post">
       <textarea name="tpl" rows="8" cols="80">{{ 7*7 }}</textarea><br>
       <button type="submit">Render</button>
     </form>
     <p>Use this page only in a lab environment. It renders whatever you enter as a Jinja2 template.</p>
+    <p>Quick payload examples (do NOT use outside lab):</p>
+    <ul>
+      <li><code>{{ 7*7 }}</code> → outputs 49</li>
+      <li><code>{{ config }}</code> → shows config object (sensitive)</li>
+      <li><code>{{ ''.__class__.__mro__[2].__subclasses__() }}</code> → inspect classes (useful for finding RCE gadgets)</li>
+    </ul>
+    <p style="color:darkred;">WARNING: This page is intentionally vulnerable to SSTI. Use only in an isolated test VM/container.</p>
   </body>
 </html>
