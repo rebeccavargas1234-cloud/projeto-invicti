@@ -74,29 +74,44 @@ def ping_host():
     except Exception as e:
         return f"Execution error: {e}", 500
 
-
-# ----------------------
-# INTENTIONALLY VULNERABLE ENDPOINT: Insecure Deserialization (Pickle) - LAB ONLY
-# ----------------------
-
-@app.route('/vuln-pickle', methods=['POST'])
+# ---------------------------
+# VULNERABLE ENDPOINT (Insecure Deserialization - HIGH)
+# ---------------------------
+# WARNING: intentionally vulnerable. Use only in a local/test environment.
+@app.route("/vuln-pickle", methods=['GET','POST'])
 def vuln_pickle():
     """
-    Expects raw base64-encoded pickle in the request body. Demonstrates insecure deserialization -> RCE risk.
-    Use only in isolated test environment.
+    Expects base64-encoded pickle payload.
+    - If method==GET: shows a simple form to paste base64 payload.
+    - If POST: will try to decode base64 and run pickle.loads() **directly** (DANGEROUS).
+    This demonstrates insecure deserialization leading to possible remote code execution.
     """
-    b64 = request.get_data(as_text=True) or ''
+    if request.method == 'GET':
+        return '''
+            <h2>Insecure Deserialization (lab only)</h2>
+            <form method="post">
+              Base64 pickled payload:<br>
+              <textarea name="payload_b64" rows="8" cols="80"></textarea><br>
+              <button type="submit">Send payload</button>
+            </form>
+            <p style="color:darkred;">WARNING: This endpoint is intentionally vulnerable. Use only in isolated test environment.</p>
+        '''
+    # Prefer form field, otherwise raw body
+    b64 = request.form.get('payload_b64') or request.get_data(as_text=True) or ''
+    b64 = b64.strip()
     if not b64:
-        return ("Send base64-encoded pickled payload in request body.\n", 400)
+        return ("Send base64-encoded pickled payload in form field 'payload_b64' or raw POST body.\n", 400)
     try:
         data = base64.b64decode(b64)
-        # VULNERABLE: untrusted pickle deserialization -> may lead to remote code execution
+    except Exception as e:
+        return (f"Base64 decode error: {e}\n", 400)
+    try:
+        # VULNERABLE: deserializing untrusted data with pickle.loads -> RCE risk
         obj = pickle.loads(data)
     except Exception as e:
-        return (f"Deserialization error: {e}\n", 400)
+        return (f"Deserialization error / exception: {e}\n", 500)
     return (f"Loaded object: {repr(obj)}\n", 200)
-# ----------------------
-
+# ---------------------------
 
 # ---------------------------
 # End of file
@@ -104,4 +119,3 @@ def vuln_pickle():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
