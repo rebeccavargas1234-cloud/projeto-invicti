@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+  <body>
+    <h2>SSTI Test Page</h2>
+    <form action="/render" method="post">
+      <textarea name="tpl" rows="8" cols="80">{{ 7*7 }}</textarea><br>
+      <button type="submit">Render</button>
+    </form>
+    <p>Use this page only in a lab environment. It renders whatever you enter as a Jinja2 template.</p>
+  </body>
+</html>
