@@ -47,35 +47,33 @@ def register_animal():
     return render_template("register_animal.html", animals=animals)
 
 # ---------------------------
-# VULNERABLE ENDPOINT (SSTI - Server Side Template Injection)
+# VULNERABLE ENDPOINT (Command Injection)
 # ---------------------------
-@app.route("/render", methods=['GET','POST'])
-def render_user_template():
+# WARNING: intentionally vulnerable. Use only in a local/test environment.
+@app.route("/ping", methods=['GET','POST'])
+def ping_host():
     """
-    Renders user-supplied template directly with Jinja2 -> SSTI vulnerability.
-    GET: shows a form
-    POST: renders the content of the 'tpl' field using render_template_string (DANGEROUS)
+    Expects parameter 'host' (from query string or form).
+    This endpoint builds a shell command concatenating user input and executes it.
+    This is VULNERABLE to command injection (e.g., host = "8.8.8.8; id").
     """
-    if request.method == 'GET':
+    host = request.values.get('host', '').strip()
+    if not host:
         return '''
-            <h2>SSTI Test (lab only)</h2>
             <form method="post">
-              Template to render:<br>
-              <textarea name="tpl" rows="8" cols="80">{{ 7*7 }}</textarea><br>
-              <button type="submit">Render</button>
+                Host to ping: <input name="host"><br>
+                <button type="submit">Ping</button>
             </form>
-            <p style="color:darkred;">WARNING: This endpoint intentionally vulnerable to SSTI. Use only in isolated test environment.</p>
         '''
-    tpl = request.form.get('tpl','').strip()
-    if not tpl:
-        return "Provide template in 'tpl' form field.\n", 400
+    # VULNERABLE: using shell=True with concatenated string
+    cmd = f"ping -c 1 {host}"
     try:
-        # VULNERABLE: rendering untrusted template string -> SSTI (possible RCE)
-        rendered = render_template_string(tpl)
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, timeout=5)
+        return "<pre>" + output.decode(errors='ignore') + "</pre>"
+    except subprocess.CalledProcessError as e:
+        return "<pre>Command failed:\n" + e.output.decode(errors='ignore') + "</pre>", 500
     except Exception as e:
-        return f"Template render error: {e}\n", 500
-    return rendered, 200
-# ---------------------------
+        return f"Execution error: {e}", 500
 
 
 
