@@ -3,31 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <title>Meu Site</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f6f8fb;
+      color: #24303f;
+      line-height: 1.6;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      background: #ffffff;
+      border-bottom: 1px solid #e6ebf0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      z-index: 10;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #1f2f4f;
+    }
+
+    .login-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .login-area input {
+      padding: 6px 8px;
+      border: 1px solid #c4cdd9;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      width: 110px;
+    }
+
+    .login-area button {
+      padding: 7px 12px;
+      background: #2b8cff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 96px 24px 24px 24px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(15, 20, 30, 0.06);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .network-form input,
+    .network-form button {
+      margin-top: 8px;
+      margin-right: 8px;
+      padding: 6px 8px;
+      font-size: 0.95rem;
+    }
+
+    .menu-list header {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 760px) {
+      .top-bar {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .login-area {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .login-area input {
+        width: 90px;
+      }
+    }
+  </style>
 </head>
-
-<!-- insert into templates/index.html (somewhere in the body) -->
-<h2>Network tools (test)</h2>
-<form action="/ping" method="get">
-  Host to ping: <input type="text" name="host" value="8.8.8.8">
-  <button type="submit">Ping (GET)</button>
-</form>
-
-<form action="/ping" method="post">
-  Host to ping (POST): <input type="text" name="host" value="8.8.8.8">
-  <button type="submit">Ping (POST)</button>
-</form>
-
-<!-- quick link for scanner discovery -->
-<p><a href="/ping?host=8.8.8.8">Quick ping link</a></p>
-
-
 <body>
-  <h1>Menu dos cachorros</h1>
-  <ul>
-    <header>Menu</header>
-    <li><a href="/labrador">Labrador</a></li>
-    <li><a href="/border">Border Collie</a></li>
-  </ul>
+  <div class="top-bar">
+    <div class="brand">Meu Site</div>
+
+    <form class="login-area" action="/login" method="post">
+      <input type="text" name="username" placeholder="Usuário" required>
+      <input type="password" name="password" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <h2>Network tools (test)</h2>
+      <form class="network-form" action="/ping" method="get">
+        Host to ping: <input type="text" name="host" value="8.8.8.8" required>
+        <button type="submit">Ping (GET)</button>
+      </form>
+
+      <form class="network-form" action="/ping" method="post">
+        Host to ping (POST): <input type="text" name="host" value="8.8.8.8" required>
+        <button type="submit">Ping (POST)</button>
+      </form>
+
+      <p><a href="/ping?host=8.8.8.8">Quick ping link</a></p>
+    </div>
+
+    <div class="card menu-list">
+      <h1>Menu dos cachorros</h1>
+      <ul>
+        <header>Menu</header>
+        <li><a href="/labrador">Labrador</a></li>
+        <li><a href="/border">Border Collie</a></li>
+      </ul>
+    </div>
+  </div>
 </body>
 </html>
 
