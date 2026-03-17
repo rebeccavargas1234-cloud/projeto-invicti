@@ -22,13 +22,16 @@ def labrador():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    error = None
     if request.method == 'POST':
-        username = request.form.get('username')
+        email = request.form.get('email')
         password = request.form.get('password')
-        # Allow any login attempt
-        session['logged_in'] = True
-        return redirect(url_for('register_animal'))
-    return render_template("login.html")
+        # Hardcoded login credentials: admin/admin
+        if email == 'admin' and password == 'admin':
+            session['logged_in'] = True
+            return redirect(url_for('register_animal'))
+        error = 'Login incorreto. Use email: admin e senha: admin.'
+    return render_template("login.html", error=error)
 
 @app.route("/register_animal", methods=['GET', 'POST'])
 def register_animal():
