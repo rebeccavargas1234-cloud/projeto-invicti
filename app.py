@@ -1,5 +1,5 @@
 from flask import Flask, render_template, render_template_string, request, redirect, url_for, session
-import subprocess, pickle, base64
+import sqlite3, subprocess, pickle, base64
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session
@@ -45,9 +45,79 @@ def register_animal():
             'age': request.form.get('age')
         }
         animals.append(animal)
+
+        # grava também no banco inseguro para efeitos de SQLi
+        init_db()
+        conn = sqlite3.connect('invicti.db')
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO animals (name, species, age) VALUES (?, ?, ?)",
+                       (animal['name'], animal['species'], animal['age']))
+        conn.commit()
+        conn.close()
+
         return redirect(url_for('register_animal'))
     
     return render_template("register_animal.html", animals=animals)
+
+
+# ---------------------------
+# VULNERABLE SQL INJECTION ENDPOINT
+# ---------------------------
+
+def init_db():
+    conn = sqlite3.connect('invicti.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS animals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            species TEXT,
+            age INTEGER
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+
+@app.route('/search_animal', methods=['GET'])
+def search_animal():
+    init_db()
+    query = request.args.get('q', '')
+
+    if not query:
+        return '''
+            <h2>Vulnerabilidade SQLi - Procure Animal</h2>
+            <form method="get">
+                Nome do animal: <input name="q"><br>
+                <button type="submit">Buscar</button>
+            </form>
+            <p>Injete payloads SQL em q como <code>' OR '1'='1</code></p>
+        '''
+
+    conn = sqlite3.connect('invicti.db')
+    cursor = conn.cursor()
+
+    # VULNERÁVEL: concatenação direta de parâmetros de usuário na query
+    sql = "SELECT name, species, age FROM animals WHERE name LIKE '%" + query + "%'"
+
+    try:
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+    except Exception as e:
+        conn.close()
+        return f"Erro na consulta SQL: {e}", 500
+
+    conn.close()
+
+    rows_html = ''.join(f'<tr><td>{name}</td><td>{species}</td><td>{age}</td></tr>' for name, species, age in rows)
+    return f'''
+        <h2>Resultados para: {query}</h2>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <tr><th>Nome</th><th>Espécie</th><th>Idade</th></tr>
+            {rows_html}
+        </table>
+        <p><a href="/search_animal">Nova busca</a></p>
+    '''
 
 
 # ---------------------------
