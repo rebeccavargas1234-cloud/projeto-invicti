@@ -129,11 +129,12 @@
     </div>
 
     <div class="card">
-      <h2>Vulnerabilidades SQLi</h2>
-      <p>Endpoints para teste de SQL Injection:</p>
+      <h2>Vulnerabilidades de injeção</h2>
+      <p>Endpoints para teste de SQL Injection + SSRF:</p>
       <ul>
-        <li><a href="/search_animal">/search_animal</a> (nome LIKE vulnerável)</li>
-        <li><a href="/search_animal_id">/search_animal_id</a> (ID vulnerável)</li>
+        <li><a href="/search_animal">/search_animal</a></li>
+        <li><a href="/search_animal_id">/search_animal_id</a></li>
+        <li><a href="/ssrf">/ssrf</a></li>
       </ul>
       <form class="network-form" action="/search_animal" method="get">
         Nome (SQLi): <input type="text" name="q" placeholder="Digite animal ou payload">
@@ -142,6 +143,10 @@
       <form class="network-form" action="/search_animal_id" method="get">
         ID (SQLi): <input type="text" name="id" placeholder="Digite id ou payload">
         <button type="submit">Buscar</button>
+      </form>
+      <form class="network-form" action="/ssrf" method="get">
+        URL (SSRF): <input type="text" name="url" placeholder="http://exemplo.local">
+        <button type="submit">Requisitar</button>
       </form>
     </div>
 

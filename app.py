@@ -1,5 +1,5 @@
 from flask import Flask, render_template, render_template_string, request, redirect, url_for, session
-import sqlite3, subprocess, pickle, base64
+import sqlite3, subprocess, pickle, base64, urllib.request, urllib.error
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session
@@ -159,6 +159,35 @@ def search_animal_id():
         </table>
         <p><a href="/search_animal_id">Nova busca por ID</a></p>
     '''
+
+
+@app.route('/ssrf', methods=['GET'])
+def ssrf():
+    target = request.args.get('url', '')
+
+    if not target:
+        return '''
+            <h2>Vulnerabilidade SSRF</h2>
+            <form method="get">
+                URL para requisição: <input name="url" placeholder="http://example.com"><br>
+                <button type="submit">Chamar</button>
+            </form>
+            <p>Atenção: este endpoint faz requisição direta ao URL sem validação (SSRF).</p>
+        '''
+
+    try:
+        with urllib.request.urlopen(target, timeout=5) as response:
+            body = response.read(1024).decode('utf-8', errors='replace')
+        return f'<h2>Resposta de {target}</h2><pre>{body}</pre><p><a href="/ssrf">Nova requisição</a></p>'
+    except urllib.error.URLError as e:
+        return f'Erro de URL/SSRF: {e}', 500
+    except Exception as e:
+        return f'Erro ao realizar requisição: {e}', 500
+
+
+# ---------------------------
+# VULNERABLE SSTI ENDPOINT (Server-Side Template Injection)
+# ---------------------------
 
 
 # ---------------------------
