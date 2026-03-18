@@ -120,6 +120,47 @@ def search_animal():
     '''
 
 
+@app.route('/search_animal_id', methods=['GET'])
+def search_animal_id():
+    init_db()
+    animal_id = request.args.get('id', '')
+
+    if not animal_id:
+        return '''
+            <h2>Vulnerabilidade SQLi - Search by ID</h2>
+            <form method="get">
+                ID do animal: <input name="id"><br>
+                <button type="submit">Buscar</button>
+            </form>
+            <p>Injete payloads SQL como <code>1 OR 1=1</code> ou <code>1; DROP TABLE animals;</code></p>
+        '''
+
+    conn = sqlite3.connect('invicti.db')
+    cursor = conn.cursor()
+
+    # VULNERÁVEL: concatenação simples em query de ID
+    sql = "SELECT id, name, species, age FROM animals WHERE id = " + animal_id
+
+    try:
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+    except Exception as e:
+        conn.close()
+        return f"Erro na consulta SQL (id-based): {e}", 500
+
+    conn.close()
+
+    rows_html = ''.join(f'<tr><td>{id_}</td><td>{name}</td><td>{species}</td><td>{age}</td></tr>' for id_, name, species, age in rows)
+    return f'''
+        <h2>Resultados para o ID: {animal_id}</h2>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <tr><th>ID</th><th>Nome</th><th>Espécie</th><th>Idade</th></tr>
+            {rows_html}
+        </table>
+        <p><a href="/search_animal_id">Nova busca por ID</a></p>
+    '''
+
+
 # ---------------------------
 # VULNERABLE SSTI ENDPOINT (Server-Side Template Injection)
 # ---------------------------
